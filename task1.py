@@ -120,6 +120,15 @@ class AddressBook(UserDict):
                 })
 
         return upcoming_birthdays
+    
+    def __str__(self):
+        if not self.data:
+            return ("Address book is empty.")
+        result = []
+        for key, record in self.data.items():
+            birthday = record.birthday.value if record.birthday else "N/A"
+            result.append(f"{key}: {record}. Birthdate: {birthday}")
+        return '\n'.join(result)
 
 def input_error(func):
     def inner(*args, **kwargs):
@@ -163,7 +172,6 @@ def add_birthday(args, book: AddressBook):
     record.add_birthday(birthdate)
     return f"Birthday for '{name}' added: {birthdate}."
 
-
 @input_error
 def show_birthday(args, book):
     name = args[0]
@@ -202,13 +210,6 @@ def change_contact(args, book: AddressBook):
     record.edit_phone(old_phone, new_phone)
     return message
 
-@input_error
-def get_all_contact(book: AddressBook) -> str:
-    if not book:
-        return "No contacts."
-
-    return str(book)
-
 def main():
     book = AddressBook()
 
@@ -234,7 +235,7 @@ def main():
             print(get_contact(args, book))
 
         elif command == "all":
-            print(get_all_contact(book))
+            print(AddressBook.__str__(book))
 
         elif command == "add-birthday":
             print(add_birthday(args, book))
